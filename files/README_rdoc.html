@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Wed May 06 17:03:18 -0700 2009</td>
+      <td>Wed May 06 17:11:16 -0700 2009</td>
     </tr>
     </table>
   </div>
@@ -97,13 +97,34 @@ href="../classes/Rack/Staticifier.html">Rack::Staticifier</a> to statically
 cache responses to your app.
 </p>
 <h2>Install</h2>
-<p>
-&#8230; coming soon &#8230;
-</p>
+<pre>
+  $ gem sources -a http://gems.github.com
+  $ sudo gem install remi-rack-staticifier
+</pre>
 <h2>Usage</h2>
-<p>
-&#8230; coming soon &#8230;
-</p>
+<pre>
+  # this will cache ALL responses in a 'cache' directory
+  use Rack::Staticifier
+
+  # this will cache ALL responses in a 'public/my/cached/stuff' directory
+  use Rack::Staticifier, :root =&gt; 'public/my/cached/stuff'
+
+  # this will only cache requests with 'foo' in the URL
+  use Rack::Staticifier do |env, response|
+    env['PATH_INFO'].include?('foo')
+  end
+
+  # this will only cache requests with 'hi' in the response body
+  use Rack::Staticifier do |env, response|
+    # response is a regular Rack response, eg. [200, {}, ['hi there']]
+    body = ''
+    response.last.each {|string| body &lt;&lt; string }
+    body.include?('hi')
+  end
+
+  # this will only cache requests with 'foo' in the URL (incase you don't want to pass a block)
+  use Rack::Staticifier, :cache_if =&gt; lambda { |env, response| env['PATH_INFO'].include?('foo') }
+</pre>
 
     </div>
 

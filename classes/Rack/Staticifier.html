@@ -80,8 +80,33 @@
 
     <div id="description">
       <p>
-<a href="Staticifier.html">Rack::Staticifier</a> doco &#8230;
+<a href="Staticifier.html">Rack::Staticifier</a> is Rack middleware for
+staticly caching responses.
 </p>
+<h4>Usage</h4>
+<pre>
+   # this will cache ALL responses in a 'cache' directory
+   use Rack::Staticifier
+
+   # this will cache ALL responses in a 'public/my/cached/stuff' directory
+   use Rack::Staticifier, :root =&gt; 'public/my/cached/stuff'
+
+   # this will only cache requests with 'foo' in the URL
+   use Rack::Staticifier do |env, response|
+     env['PATH_INFO'].include?('foo')
+   end
+
+   # this will only cache requests with 'hi' in the response body
+   use Rack::Staticifier do |env, response|
+     # response is a regular Rack response, eg. [200, {}, ['hi there']]
+     body = ''
+     response.last.each {|string| body &lt;&lt; string }
+     body.include?('hi')
+   end
+
+   # this will only cache requests with 'foo' in the URL (incase you don't want to pass a block)
+   use Rack::Staticifier, :cache_if =&gt; lambda { |env, response| env['PATH_INFO'].include?('foo') }
+</pre>
 
     </div>
 
@@ -153,14 +178,14 @@ configuration options
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/rack-staticifier.rb, line 12</span>
-12:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">app</span>, <span class="ruby-identifier">config_options</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
-13:       <span class="ruby-ivar">@app</span>     = <span class="ruby-identifier">app</span>
-14:       <span class="ruby-ivar">@config</span> = <span class="ruby-identifier">default_config_options</span>
-15: 
-16:       <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">config_options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">config_options</span>
-17:       <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:cache_if</span>] = <span class="ruby-identifier">block</span>     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
-18:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/rack-staticifier.rb, line 37</span>
+37:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">app</span>, <span class="ruby-identifier">config_options</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
+38:       <span class="ruby-ivar">@app</span>     = <span class="ruby-identifier">app</span>
+39:       <span class="ruby-ivar">@config</span> = <span class="ruby-identifier">default_config_options</span>
+40: 
+41:       <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">config_options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">config_options</span>
+42:       <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:cache_if</span>] = <span class="ruby-identifier">block</span>     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+43:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -182,12 +207,12 @@ configuration options
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/rack-staticifier.rb, line 20</span>
-20:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span> <span class="ruby-identifier">env</span>
-21:       <span class="ruby-identifier">response</span> = <span class="ruby-ivar">@app</span>.<span class="ruby-identifier">call</span> <span class="ruby-identifier">env</span>
-22:       <span class="ruby-identifier">cache_response</span>(<span class="ruby-identifier">env</span>, <span class="ruby-identifier">response</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">should_cache_response?</span>(<span class="ruby-identifier">env</span>, <span class="ruby-identifier">response</span>)
-23:       <span class="ruby-identifier">response</span>
-24:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/rack-staticifier.rb, line 45</span>
+45:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span> <span class="ruby-identifier">env</span>
+46:       <span class="ruby-identifier">response</span> = <span class="ruby-ivar">@app</span>.<span class="ruby-identifier">call</span> <span class="ruby-identifier">env</span>
+47:       <span class="ruby-identifier">cache_response</span>(<span class="ruby-identifier">env</span>, <span class="ruby-identifier">response</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">should_cache_response?</span>(<span class="ruby-identifier">env</span>, <span class="ruby-identifier">response</span>)
+48:       <span class="ruby-identifier">response</span>
+49:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
